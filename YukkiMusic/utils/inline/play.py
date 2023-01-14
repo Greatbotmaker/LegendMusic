@@ -1,12 +1,3 @@
-#
-# Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
-#
-# This file is part of < https://github.com/TeamYukki/YukkiMusicBot > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/TeamYukki/YukkiMusicBot/blob/master/LICENSE >
-#
-# All rights reserved.
-
 import random
 
 from pyrogram.types import InlineKeyboardButton
@@ -27,12 +18,37 @@ selections = [
     "▃▅▂▅▃▇▄▅▃",
 ]
 
+def time_to_sec(time: str):
+    x = time.split(":")
 
-## After Edits with Timer Bar
+    if len(x) == 2:
+        min = int(x[0])
+        sec = int(x[1])
 
+        total_sec = (min*60) + sec
+    elif len(x) == 3:
+        hour = int(x[0])
+        min = int(x[1])
+        sec = int(x[2])
+
+        total_sec = (hour*60*60) + (min*60) + sec
+
+    return total_sec
 
 def stream_markup_timer(_, videoid, chat_id, played, dur):
-    bar = random.choice(selections)
+    played_sec = time_to_sec(played)
+    total_sec = time_to_sec(dur)
+
+    x, y = str(round(played_sec/total_sec,1)).split(".")
+    pos = int(y)
+
+    line = "—"
+    circle = "◉"
+
+    bar = line*(pos-1)
+    bar += circle
+    bar += line*(10-len(bar))
+
     buttons = [
         [
             InlineKeyboardButton(
@@ -42,8 +58,8 @@ def stream_markup_timer(_, videoid, chat_id, played, dur):
         ],
         [
             InlineKeyboardButton(
-                text=_["PL_B_2"],
-                callback_data=f"add_playlist {videoid}",
+                text="🏠 Support",
+                url="https://telegram.dog/YaaroKiMehfilYKM",
             ),
             InlineKeyboardButton(
                 text=_["PL_B_3"],
@@ -60,7 +76,19 @@ def stream_markup_timer(_, videoid, chat_id, played, dur):
 
 
 def telegram_markup_timer(_, chat_id, played, dur):
-    bar = random.choice(selections)
+    played_sec = time_to_sec(played)
+    total_sec = time_to_sec(dur)
+
+    x, y = str(round(played_sec/total_sec,1)).split(".")
+    pos = int(y)
+
+    line = "—"
+    circle = "◉"
+
+    bar = line*(pos-1)
+    bar += circle
+    bar += line*(10-len(bar))
+    
     buttons = [
         [
             InlineKeyboardButton(
@@ -81,15 +109,12 @@ def telegram_markup_timer(_, chat_id, played, dur):
     return buttons
 
 
-## Inline without Timer Bar
-
-
 def stream_markup(_, videoid, chat_id):
     buttons = [
         [
             InlineKeyboardButton(
-                text=_["PL_B_2"],
-                callback_data=f"add_playlist {videoid}",
+                text="🏠 Support",
+                url="https://telegram.dog/YaaroKiMehfilYKM",
             ),
             InlineKeyboardButton(
                 text=_["PL_B_3"],
@@ -112,15 +137,13 @@ def telegram_markup(_, chat_id):
                 text=_["PL_B_3"],
                 callback_data=f"PanelMarkup None|{chat_id}",
             ),
+        
             InlineKeyboardButton(
                 text=_["CLOSEMENU_BUTTON"], callback_data="close"
             ),
         ],
     ]
     return buttons
-
-
-## Search Query Inline
 
 
 def track_markup(_, videoid, user_id, channel, fplay):
@@ -149,25 +172,22 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text=_["P_B_1"],
+                text="🎵 Play Audio",
                 callback_data=f"YukkiPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text=_["P_B_2"],
+                text="🎥 Play Video",
                 callback_data=f"YukkiPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
             ),
         ],
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="🗑 Close",
                 callback_data=f"forceclose {videoid}|{user_id}",
             ),
         ],
     ]
     return buttons
-
-
-## Live Stream Markup
 
 
 def livestream_markup(_, videoid, user_id, mode, channel, fplay):
@@ -184,9 +204,6 @@ def livestream_markup(_, videoid, user_id, mode, channel, fplay):
         ],
     ]
     return buttons
-
-
-## Slider Query Markup
 
 
 def slider_markup(
@@ -220,10 +237,6 @@ def slider_markup(
         ],
     ]
     return buttons
-
-
-## Cpanel Markup
-
 
 def panel_markup_1(_, videoid, chat_id):
     buttons = [
